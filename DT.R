@@ -15,7 +15,7 @@ library(rpart.plot)
 #install.packages("RColorBrewer")
 library(RColorBrewer)
 
-my_tree <- rpart(Mark~Pass+Attempt+Semester_en+EarnedECP+FY+SY+TY+EX+EXT,
+my_tree <- rpart(Mark~Attempt+Semester_en+EarnedECP+FY+SY+TY+EX+EXT,
                  data=train)
 
 #fancyRpartPlot(my_tree)
@@ -32,7 +32,7 @@ tree_sol <- data.frame(StudentID=test1$StudentId, Pass=treePrediction)
 #install.packages("party")
 library("party")
 
-dtree <- ctree(Mark~Pass+Attempt+Semester_en+EarnedECP+FY+SY+TY+EX+EXT,
+dtree <- ctree(Mark~Attempt+Semester_en+EarnedECP+FY+SY+TY+EX+EXT,
                  data=train)
 
 #plot(dtree)
@@ -56,7 +56,7 @@ library(randomForest)
 
 set.seed(111)
 
-my_forest <- randomForest(as.factor(Mark)~Pass+Attempt+Semester_en+EarnedECP+FY+SY+TY+EX+EXT,
+my_forest <- randomForest(as.factor(Mark)~Attempt+Semester_en+EarnedECP+FY+SY+TY+EX+EXT,
                           data=train, importance=TRUE)
 
 #print(my_forest)
@@ -79,13 +79,26 @@ forest_solution <- data.frame(StudentID=test1$StudentId, Pass=forest_prediction)
 
 library('e1071')
 
-nB_model <- naiveBayes(Mark~Pass+Attempt+Semester_en+EarnedECP+FY+SY+TY+EX+EXT,
+nB_model <- naiveBayes(Mark~Attempt+Semester_en+EarnedECP+FY+SY+TY+EX+EXT,
                        data=train)
 
 nB_prediction <- predict(nB_model, test1)
+nB_prediction2 <- predict(nB_model, test2)
 
 nB_solution <- data.frame(StudentID=test1$StudentId, Grade=nB_prediction)
-#write.csv(nB_solution, file = "nB_solution.csv")
+nB_solution2 <- data.frame(StudentID=test2$StudentId, Grade=nB_prediction2)
+
+write.csv(nB_solution, file = "nB_solution.csv")
+#write.csv(nB_solution2, file = "nB_solution2.csv")
+
+#Confusion Matrix
+#install.packages("caret")
+library(caret)
+table(nB_prediction, test1$Mark)
+table(nB_prediction2, test2$Mark)
+
+confusionMatrix(nB_prediction, test1$Mark)
+confusionMatrix(nB_prediction2, test2$Mark)
 #########################################
 
 
@@ -96,7 +109,7 @@ nB_solution <- data.frame(StudentID=test1$StudentId, Grade=nB_prediction)
 #install.packages('e1071')
 # library(e1071)
 # 
-# svm_model <- svm(Mark~Pass+Attempt+EarnedECP,
+# svm_model <- svm(Mark~Attempt+EarnedECP,
 #                  data=train, type='one', kernel='sigmoid')
 # 
 # svm_prediction <- predict(svm_model, test1)
